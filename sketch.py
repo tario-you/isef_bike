@@ -52,7 +52,7 @@ def directional_control():
     sleep(2)
 
 
-def upshift(upshift_duration=.7):
+def downshift(upshift_duration=.4):
     write_digitals(0, 1, 0, 0)
     sleep(upshift_duration)
     write_digitals(1, 0, 0, 0)
@@ -60,7 +60,7 @@ def upshift(upshift_duration=.7):
     write_digitals(0, 0, 0, 0)
 
 
-def downshift(downshift_duration=.7):
+def upshift(downshift_duration=1):
     write_digitals(0, 0, 1, 0)
     sleep(downshift_duration)
     write_digitals(0, 0, 0, 1)
@@ -68,9 +68,12 @@ def downshift(downshift_duration=.7):
     write_digitals(0, 0, 0, 0)
 
 
-# upshift(.7)
-downshift(.9)
-# sleep(1)
+upshift(1.6)
+downshift(.6)
+
+# while True:
+#     write_digitals(0, 0, 0, 0)
+# # sleep(1)
 
 # sleep(1)
 

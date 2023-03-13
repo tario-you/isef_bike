@@ -66,8 +66,7 @@ def directional_control():
     sleep(2)
 
 
-def upshift(upshift_duration=.7):
-    print("upshifted")
+def upshift(upshift_duration=.9):
     write_digitals(0, 1, 0, 0)
     sleep(upshift_duration)
     write_digitals(1, 0, 0, 0)
@@ -75,8 +74,7 @@ def upshift(upshift_duration=.7):
     write_digitals(0, 0, 0, 0)
 
 
-def downshift(downshift_duration=.9):
-    print("downshifted")
+def downshift(downshift_duration=2):
     write_digitals(0, 0, 1, 0)
     sleep(downshift_duration)
     write_digitals(0, 0, 0, 1)
@@ -117,10 +115,10 @@ def poly_coeff(x, coeffs):
 def clear_data():
     folders_to_scrub = ['rpm', 'vel', 'wat', 'data']
     for i in folders_to_scrub:
-        files = glob.glob(f'/Users/tarioyou/biking/final/{i}/*')
+        files = glob.glob(f'/Users/tarioyou/biking/isef_bike/{i}/*')
         for f in files:
             os.remove(f)
-    with open('/Users/tarioyou/biking/final/output.txt', 'w') as f:
+    with open('/Users/tarioyou/biking/isef_bike/output.txt', 'w') as f:
         f.write("")
 
 
@@ -148,6 +146,9 @@ def get_decision(vel, wat, rpm):
         return 0
     # get theoretical gear
     gear = speed_cad_to_gear(vel, rpm)
+    print(f'theoretical gear = {gear}')
+    with open('/Users/tarioyou/biking/isef_bike/output.txt', 'a') as f:
+        f.write(f'theoretical gear = {gear}\n')
 
     # get closest matching gear
     gear = min(enumerate(ratios), key=lambda x: abs(x[1]-gear))[1]
@@ -213,7 +214,7 @@ def record():
         sct_img = sct.grab(monitor)  # (monitor)
         sct_img = np.array(sct_img)
 
-        cv2.imwrite(f'/Users/tarioyou/biking/final/data/s{i}.png', sct_img)
+        cv2.imwrite(f'/Users/tarioyou/biking/isef_bike/data/s{i}.png', sct_img)
 
         # print(sct_img.shape)
         vel = slice(sct_img, v[0], v[1], v[2], v[3])
@@ -222,9 +223,9 @@ def record():
         wat = cv2.bitwise_not(wat)
         rpm = cv2.bitwise_not(rpm)
 
-        cv2.imwrite(f'/Users/tarioyou/biking/final/vel/vel{i}.png', vel)
-        cv2.imwrite(f'/Users/tarioyou/biking/final/rpm/rpm{i}.png', rpm)
-        cv2.imwrite(f'/Users/tarioyou/biking/final/wat/wat{i}.png', wat)
+        cv2.imwrite(f'/Users/tarioyou/biking/isef_bike/vel/vel{i}.png', vel)
+        cv2.imwrite(f'/Users/tarioyou/biking/isef_bike/rpm/rpm{i}.png', rpm)
+        cv2.imwrite(f'/Users/tarioyou/biking/isef_bike/wat/wat{i}.png', wat)
 
         print(f'{read_number(vel).split(" ")[0]=}\t{read_number(wat)=}\t{read_number(rpm)=}')
 
@@ -251,14 +252,16 @@ def record():
             rpm_num = prev_rpm
 
         decision = get_decision(vel_num, wat_num, rpm_num)
-        if decision == -1:
-            downshift()
-        elif decision == 1:
+        if decision == 1:
             upshift()
+            sleep(0.2)
+        # elif decision == -1:
+            # downshift()
+            # sleep(0.2)
 
         # torque = wat_num * 9.554140127 / rpm_num
 
-        with open('/Users/tarioyou/biking/final/output.txt', 'a') as f:
+        with open('/Users/tarioyou/biking/isef_bike/output.txt', 'a') as f:
             f.write(f'{vel_num = }\t{wat_num = }\t{rpm_num = }\t{decision = }\t{decision = }\n')
 
         print(f'{vel_num = }\t{wat_num = }\t{rpm_num = }\t{decision = }\n')
@@ -321,8 +324,8 @@ def get_data():
 
 if __name__ == "__main__":
     # MAC: tencent meeting = 2/3 left
-    # Android top half: thunder gps speedometer
-    # Android bottom half: magene utilities
+    # Android top 2/3: speedometer
+    # Android bottom 1/3: magene utilities
 
     # get_data()
 
